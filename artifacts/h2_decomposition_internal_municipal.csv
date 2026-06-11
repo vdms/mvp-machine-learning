@@ -1,0 +1,4 @@
+cenario,features,periodo_teste,f1
+"Individual, teste interno 2022-2023 (Modelo A)",individuais,2022-2023,0.5842
+"Municipal, teste interno 2022-2023 (novo)",municipais,2022-2023,0.4413
+"Municipal, teste externo 2024 (Modelo B)",municipais,2024,0.4038

@@ -1,0 +1,776 @@
+{
+  "source": "INEP Microdados ENEM",
+  "source_url": "https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/enem",
+  "years": [
+    2022,
+    2023,
+    2024
+  ],
+  "recorte": "SG_UF_PROVA == RJ",
+  "filters": [
+    "TP_PRESENCA_MT == 1",
+    "NU_NOTA_MT valida"
+  ],
+  "hypotheses": {
+    "H1": "Variáveis socioeducacionais e escolares possuem capacidade preditiva relevante.",
+    "H2": "Parte dos padrões de 2022-2023 permanece estável em 2024.",
+    "H3": "Modelos supervisionados superam baseline ingênuo nos dois desenhos."
+  },
+  "methodological_note": "Modelo A e Modelo B nao sao competicao direta; respondem perguntas diferentes.",
+  "model_a": {
+    "experiment": "Modelo A - Socioeducacional Individual",
+    "question": "Variáveis socioeducacionais individuais em 2022-2023 ajudam a prever alto desempenho em Matemática?",
+    "target_threshold_train_only": 645.1,
+    "features_used": [
+      "TP_FAIXA_ETARIA",
+      "TP_SEXO",
+      "TP_ESTADO_CIVIL",
+      "TP_COR_RACA",
+      "TP_NACIONALIDADE",
+      "TP_ST_CONCLUSAO",
+      "TP_ANO_CONCLUIU",
+      "TP_ESCOLA",
+      "TP_ENSINO",
+      "IN_TREINEIRO",
+      "CO_MUNICIPIO_ESC",
+      "NO_MUNICIPIO_ESC",
+      "CO_UF_ESC",
+      "SG_UF_ESC",
+      "TP_DEPENDENCIA_ADM_ESC",
+      "TP_LOCALIZACAO_ESC",
+      "TP_SIT_FUNC_ESC",
+      "CO_MUNICIPIO_PROVA",
+      "NO_MUNICIPIO_PROVA",
+      "Q001",
+      "Q002",
+      "Q003",
+      "Q004",
+      "Q005",
+      "Q006",
+      "Q007",
+      "Q008",
+      "Q009",
+      "Q010",
+      "Q011",
+      "Q012",
+      "Q013",
+      "Q014",
+      "Q015",
+      "Q016",
+      "Q017",
+      "Q018",
+      "Q019",
+      "Q020",
+      "Q021",
+      "Q022",
+      "Q023",
+      "Q024",
+      "Q025"
+    ],
+    "categorical_features": [
+      "TP_FAIXA_ETARIA",
+      "TP_SEXO",
+      "TP_ESTADO_CIVIL",
+      "TP_COR_RACA",
+      "TP_NACIONALIDADE",
+      "TP_ST_CONCLUSAO",
+      "TP_ANO_CONCLUIU",
+      "TP_ESCOLA",
+      "TP_ENSINO",
+      "IN_TREINEIRO",
+      "CO_MUNICIPIO_ESC",
+      "NO_MUNICIPIO_ESC",
+      "CO_UF_ESC",
+      "SG_UF_ESC",
+      "TP_DEPENDENCIA_ADM_ESC",
+      "TP_LOCALIZACAO_ESC",
+      "TP_SIT_FUNC_ESC",
+      "CO_MUNICIPIO_PROVA",
+      "NO_MUNICIPIO_PROVA",
+      "Q001",
+      "Q002",
+      "Q003",
+      "Q004",
+      "Q005",
+      "Q006",
+      "Q007",
+      "Q008",
+      "Q009",
+      "Q010",
+      "Q011",
+      "Q012",
+      "Q013",
+      "Q014",
+      "Q015",
+      "Q016",
+      "Q017",
+      "Q018",
+      "Q019",
+      "Q020",
+      "Q021",
+      "Q022",
+      "Q023",
+      "Q024",
+      "Q025"
+    ],
+    "numeric_features": [],
+    "train_rows_full": 283877,
+    "train_rows_modeling": 60000,
+    "test_rows": 70970,
+    "results": [
+      {
+        "modelo": "LogisticRegression",
+        "accuracy": 0.7334366634,
+        "precision": 0.4794184494,
+        "recall": 0.7475389548,
+        "f1_score": 0.5841832249,
+        "roc_auc": 0.8127897168,
+        "confusion_matrix": [
+          [
+            38763,
+            14430
+          ],
+          [
+            4488,
+            13289
+          ]
+        ],
+        "training_seconds": 1.402790708
+      },
+      {
+        "modelo": "RandomForestClassifier",
+        "accuracy": 0.7449767507,
+        "precision": 0.4935164304,
+        "recall": 0.6893739101,
+        "f1_score": 0.5752305851,
+        "roc_auc": 0.8034962546,
+        "confusion_matrix": [
+          [
+            40616,
+            12577
+          ],
+          [
+            5522,
+            12255
+          ]
+        ],
+        "training_seconds": 4.748216917
+      },
+      {
+        "modelo": "RandomForestClassifier_Optimized",
+        "accuracy": 0.738960124,
+        "precision": 0.4854625209,
+        "recall": 0.7034932778,
+        "f1_score": 0.5744866553,
+        "roc_auc": 0.8032455323,
+        "confusion_matrix": [
+          [
+            39938,
+            13255
+          ],
+          [
+            5271,
+            12506
+          ]
+        ],
+        "training_seconds": 33.467802542
+      },
+      {
+        "modelo": "DummyClassifier",
+        "accuracy": 0.7495138791,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "roc_auc": 0.5,
+        "confusion_matrix": [
+          [
+            53193,
+            0
+          ],
+          [
+            17777,
+            0
+          ]
+        ],
+        "training_seconds": 0.63153775
+      }
+    ],
+    "train_results": [
+      {
+        "modelo": "DummyClassifier",
+        "split": "treino_modelagem",
+        "accuracy": 0.7498833333,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "roc_auc": 0.5,
+        "confusion_matrix": [
+          [
+            44993,
+            0
+          ],
+          [
+            15007,
+            0
+          ]
+        ],
+        "training_seconds": 0.63153775
+      },
+      {
+        "modelo": "DummyClassifier",
+        "split": "teste_a_2022_2023",
+        "accuracy": 0.7495138791,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "roc_auc": 0.5,
+        "confusion_matrix": [
+          [
+            53193,
+            0
+          ],
+          [
+            17777,
+            0
+          ]
+        ],
+        "training_seconds": 0.63153775
+      },
+      {
+        "modelo": "LogisticRegression",
+        "split": "treino_modelagem",
+        "accuracy": 0.7348166667,
+        "precision": 0.480873392,
+        "recall": 0.7572466182,
+        "f1_score": 0.5882139807,
+        "roc_auc": 0.8165071437,
+        "confusion_matrix": [
+          [
+            32725,
+            12268
+          ],
+          [
+            3643,
+            11364
+          ]
+        ],
+        "training_seconds": 1.402790708
+      },
+      {
+        "modelo": "LogisticRegression",
+        "split": "teste_a_2022_2023",
+        "accuracy": 0.7334366634,
+        "precision": 0.4794184494,
+        "recall": 0.7475389548,
+        "f1_score": 0.5841832249,
+        "roc_auc": 0.8127897168,
+        "confusion_matrix": [
+          [
+            38763,
+            14430
+          ],
+          [
+            4488,
+            13289
+          ]
+        ],
+        "training_seconds": 1.402790708
+      },
+      {
+        "modelo": "RandomForestClassifier",
+        "split": "treino_modelagem",
+        "accuracy": 0.7928666667,
+        "precision": 0.5613726143,
+        "recall": 0.7859665489,
+        "f1_score": 0.6549503026,
+        "roc_auc": 0.877061666,
+        "confusion_matrix": [
+          [
+            35777,
+            9216
+          ],
+          [
+            3212,
+            11795
+          ]
+        ],
+        "training_seconds": 4.748216917
+      },
+      {
+        "modelo": "RandomForestClassifier",
+        "split": "teste_a_2022_2023",
+        "accuracy": 0.7449767507,
+        "precision": 0.4935164304,
+        "recall": 0.6893739101,
+        "f1_score": 0.5752305851,
+        "roc_auc": 0.8034962546,
+        "confusion_matrix": [
+          [
+            40616,
+            12577
+          ],
+          [
+            5522,
+            12255
+          ]
+        ],
+        "training_seconds": 4.748216917
+      },
+      {
+        "modelo": "RandomForestClassifier_Optimized",
+        "split": "treino_modelagem",
+        "accuracy": 0.7731333333,
+        "precision": 0.5317059866,
+        "recall": 0.7794362631,
+        "f1_score": 0.6321677566,
+        "roc_auc": 0.8604701007,
+        "confusion_matrix": [
+          [
+            34691,
+            10302
+          ],
+          [
+            3310,
+            11697
+          ]
+        ],
+        "training_seconds": 33.467802542
+      },
+      {
+        "modelo": "RandomForestClassifier_Optimized",
+        "split": "teste_a_2022_2023",
+        "accuracy": 0.738960124,
+        "precision": 0.4854625209,
+        "recall": 0.7034932778,
+        "f1_score": 0.5744866553,
+        "roc_auc": 0.8032455323,
+        "confusion_matrix": [
+          [
+            39938,
+            13255
+          ],
+          [
+            5271,
+            12506
+          ]
+        ],
+        "training_seconds": 33.467802542
+      }
+    ],
+    "best_model_within_experiment": "LogisticRegression",
+    "best_params": {
+      "model__max_depth": 20,
+      "model__min_samples_leaf": 8,
+      "model__n_estimators": 120
+    },
+    "supera_baseline": true
+  },
+  "model_b": {
+    "experiment": "Modelo B - Robustez Temporal",
+    "question": "Padrões aprendidos em 2022-2023 se mantêm em 2024 usando features comparáveis e agregados municipais?",
+    "target_threshold_train_only": 645.1,
+    "features_used": [
+      "CO_MUNICIPIO_ESC",
+      "NO_MUNICIPIO_ESC",
+      "CO_UF_ESC",
+      "SG_UF_ESC",
+      "TP_DEPENDENCIA_ADM_ESC",
+      "TP_LOCALIZACAO_ESC",
+      "TP_SIT_FUNC_ESC",
+      "CO_MUNICIPIO_PROVA",
+      "NO_MUNICIPIO_PROVA",
+      "agg_profile_n",
+      "agg_Q006_A",
+      "agg_Q006_B",
+      "agg_Q006_C",
+      "agg_Q006_D",
+      "agg_Q006_E",
+      "agg_Q006_F",
+      "agg_Q006_G",
+      "agg_Q006_H",
+      "agg_Q006_I",
+      "agg_Q006_J",
+      "agg_Q006_K",
+      "agg_Q006_L",
+      "agg_Q006_M",
+      "agg_Q006_N",
+      "agg_Q006_O",
+      "agg_Q006_P",
+      "agg_Q006_Q",
+      "agg_TP_COR_RACA_0",
+      "agg_TP_COR_RACA_1",
+      "agg_TP_COR_RACA_2",
+      "agg_TP_COR_RACA_3",
+      "agg_TP_COR_RACA_4",
+      "agg_TP_COR_RACA_5",
+      "agg_TP_SEXO_F",
+      "agg_TP_SEXO_M",
+      "agg_TP_FAIXA_ETARIA_1",
+      "agg_TP_FAIXA_ETARIA_10",
+      "agg_TP_FAIXA_ETARIA_11",
+      "agg_TP_FAIXA_ETARIA_12",
+      "agg_TP_FAIXA_ETARIA_13",
+      "agg_TP_FAIXA_ETARIA_14",
+      "agg_TP_FAIXA_ETARIA_15",
+      "agg_TP_FAIXA_ETARIA_16",
+      "agg_TP_FAIXA_ETARIA_17",
+      "agg_TP_FAIXA_ETARIA_18",
+      "agg_TP_FAIXA_ETARIA_19",
+      "agg_TP_FAIXA_ETARIA_2",
+      "agg_TP_FAIXA_ETARIA_20",
+      "agg_TP_FAIXA_ETARIA_3",
+      "agg_TP_FAIXA_ETARIA_4",
+      "agg_TP_FAIXA_ETARIA_5",
+      "agg_TP_FAIXA_ETARIA_6",
+      "agg_TP_FAIXA_ETARIA_7",
+      "agg_TP_FAIXA_ETARIA_8",
+      "agg_TP_FAIXA_ETARIA_9",
+      "agg_IN_TREINEIRO_0",
+      "agg_IN_TREINEIRO_1",
+      "agg_TP_ST_CONCLUSAO_1",
+      "agg_TP_ST_CONCLUSAO_2",
+      "agg_TP_ST_CONCLUSAO_3",
+      "agg_TP_ST_CONCLUSAO_4",
+      "agg_TP_ENSINO_1.0",
+      "agg_TP_ENSINO_2.0",
+      "agg_TP_ENSINO_NA"
+    ],
+    "categorical_features": [
+      "CO_MUNICIPIO_ESC",
+      "NO_MUNICIPIO_ESC",
+      "CO_UF_ESC",
+      "SG_UF_ESC",
+      "TP_DEPENDENCIA_ADM_ESC",
+      "TP_LOCALIZACAO_ESC",
+      "TP_SIT_FUNC_ESC",
+      "CO_MUNICIPIO_PROVA",
+      "NO_MUNICIPIO_PROVA"
+    ],
+    "numeric_features": [
+      "agg_profile_n",
+      "agg_Q006_A",
+      "agg_Q006_B",
+      "agg_Q006_C",
+      "agg_Q006_D",
+      "agg_Q006_E",
+      "agg_Q006_F",
+      "agg_Q006_G",
+      "agg_Q006_H",
+      "agg_Q006_I",
+      "agg_Q006_J",
+      "agg_Q006_K",
+      "agg_Q006_L",
+      "agg_Q006_M",
+      "agg_Q006_N",
+      "agg_Q006_O",
+      "agg_Q006_P",
+      "agg_Q006_Q",
+      "agg_TP_COR_RACA_0",
+      "agg_TP_COR_RACA_1",
+      "agg_TP_COR_RACA_2",
+      "agg_TP_COR_RACA_3",
+      "agg_TP_COR_RACA_4",
+      "agg_TP_COR_RACA_5",
+      "agg_TP_SEXO_F",
+      "agg_TP_SEXO_M",
+      "agg_TP_FAIXA_ETARIA_1",
+      "agg_TP_FAIXA_ETARIA_10",
+      "agg_TP_FAIXA_ETARIA_11",
+      "agg_TP_FAIXA_ETARIA_12",
+      "agg_TP_FAIXA_ETARIA_13",
+      "agg_TP_FAIXA_ETARIA_14",
+      "agg_TP_FAIXA_ETARIA_15",
+      "agg_TP_FAIXA_ETARIA_16",
+      "agg_TP_FAIXA_ETARIA_17",
+      "agg_TP_FAIXA_ETARIA_18",
+      "agg_TP_FAIXA_ETARIA_19",
+      "agg_TP_FAIXA_ETARIA_2",
+      "agg_TP_FAIXA_ETARIA_20",
+      "agg_TP_FAIXA_ETARIA_3",
+      "agg_TP_FAIXA_ETARIA_4",
+      "agg_TP_FAIXA_ETARIA_5",
+      "agg_TP_FAIXA_ETARIA_6",
+      "agg_TP_FAIXA_ETARIA_7",
+      "agg_TP_FAIXA_ETARIA_8",
+      "agg_TP_FAIXA_ETARIA_9",
+      "agg_IN_TREINEIRO_0",
+      "agg_IN_TREINEIRO_1",
+      "agg_TP_ST_CONCLUSAO_1",
+      "agg_TP_ST_CONCLUSAO_2",
+      "agg_TP_ST_CONCLUSAO_3",
+      "agg_TP_ST_CONCLUSAO_4",
+      "agg_TP_ENSINO_1.0",
+      "agg_TP_ENSINO_2.0",
+      "agg_TP_ENSINO_NA"
+    ],
+    "train_rows_full": 354847,
+    "train_rows_modeling": 60000,
+    "external_test_rows_2024": 202316,
+    "results": [
+      {
+        "modelo": "LogisticRegression",
+        "accuracy": 0.4011398011,
+        "precision": 0.2598100665,
+        "recall": 0.9062341276,
+        "f1_score": 0.4038418958,
+        "roc_auc": 0.6571467512,
+        "confusion_matrix": [
+          [
+            40120,
+            116913
+          ],
+          [
+            4246,
+            41037
+          ]
+        ],
+        "training_seconds": 2.651173208
+      },
+      {
+        "modelo": "RandomForestClassifier_Optimized",
+        "accuracy": 0.7728701635,
+        "precision": 0.483811644,
+        "recall": 0.2207671753,
+        "f1_score": 0.3031874564,
+        "roc_auc": 0.6627205168,
+        "confusion_matrix": [
+          [
+            146367,
+            10666
+          ],
+          [
+            35286,
+            9997
+          ]
+        ],
+        "training_seconds": 46.86555975
+      },
+      {
+        "modelo": "RandomForestClassifier",
+        "accuracy": 0.772277032,
+        "precision": 0.4791148287,
+        "recall": 0.1998542499,
+        "f1_score": 0.2820544786,
+        "roc_auc": 0.6740617186,
+        "confusion_matrix": [
+          [
+            147194,
+            9839
+          ],
+          [
+            36233,
+            9050
+          ]
+        ],
+        "training_seconds": 5.41324575
+      },
+      {
+        "modelo": "DummyClassifier",
+        "accuracy": 0.7761768718,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "roc_auc": 0.5,
+        "confusion_matrix": [
+          [
+            157033,
+            0
+          ],
+          [
+            45283,
+            0
+          ]
+        ],
+        "training_seconds": 0.440561417
+      }
+    ],
+    "train_results": [
+      {
+        "modelo": "DummyClassifier",
+        "split": "treino_modelagem",
+        "accuracy": 0.7498,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "roc_auc": 0.5,
+        "confusion_matrix": [
+          [
+            44988,
+            0
+          ],
+          [
+            15012,
+            0
+          ]
+        ],
+        "training_seconds": 0.440561417
+      },
+      {
+        "modelo": "DummyClassifier",
+        "split": "teste_externo_2024",
+        "accuracy": 0.7761768718,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "roc_auc": 0.5,
+        "confusion_matrix": [
+          [
+            157033,
+            0
+          ],
+          [
+            45283,
+            0
+          ]
+        ],
+        "training_seconds": 0.440561417
+      },
+      {
+        "modelo": "LogisticRegression",
+        "split": "treino_modelagem",
+        "accuracy": 0.6297333333,
+        "precision": 0.353708066,
+        "recall": 0.5801358913,
+        "f1_score": 0.4394711611,
+        "roc_auc": 0.6673795385,
+        "confusion_matrix": [
+          [
+            29075,
+            15913
+          ],
+          [
+            6303,
+            8709
+          ]
+        ],
+        "training_seconds": 2.651173208
+      },
+      {
+        "modelo": "LogisticRegression",
+        "split": "teste_externo_2024",
+        "accuracy": 0.4011398011,
+        "precision": 0.2598100665,
+        "recall": 0.9062341276,
+        "f1_score": 0.4038418958,
+        "roc_auc": 0.6571467512,
+        "confusion_matrix": [
+          [
+            40120,
+            116913
+          ],
+          [
+            4246,
+            41037
+          ]
+        ],
+        "training_seconds": 2.651173208
+      },
+      {
+        "modelo": "RandomForestClassifier",
+        "split": "treino_modelagem",
+        "accuracy": 0.54795,
+        "precision": 0.3235011222,
+        "recall": 0.7393418598,
+        "f1_score": 0.4500719775,
+        "roc_auc": 0.6714523672,
+        "confusion_matrix": [
+          [
+            21778,
+            23210
+          ],
+          [
+            3913,
+            11099
+          ]
+        ],
+        "training_seconds": 5.41324575
+      },
+      {
+        "modelo": "RandomForestClassifier",
+        "split": "teste_externo_2024",
+        "accuracy": 0.772277032,
+        "precision": 0.4791148287,
+        "recall": 0.1998542499,
+        "f1_score": 0.2820544786,
+        "roc_auc": 0.6740617186,
+        "confusion_matrix": [
+          [
+            147194,
+            9839
+          ],
+          [
+            36233,
+            9050
+          ]
+        ],
+        "training_seconds": 5.41324575
+      },
+      {
+        "modelo": "RandomForestClassifier_Optimized",
+        "split": "treino_modelagem",
+        "accuracy": 0.5471166667,
+        "precision": 0.3220358826,
+        "recall": 0.7329469758,
+        "f1_score": 0.447467415,
+        "roc_auc": 0.6661581296,
+        "confusion_matrix": [
+          [
+            21824,
+            23164
+          ],
+          [
+            4009,
+            11003
+          ]
+        ],
+        "training_seconds": 46.86555975
+      },
+      {
+        "modelo": "RandomForestClassifier_Optimized",
+        "split": "teste_externo_2024",
+        "accuracy": 0.7728701635,
+        "precision": 0.483811644,
+        "recall": 0.2207671753,
+        "f1_score": 0.3031874564,
+        "roc_auc": 0.6627205168,
+        "confusion_matrix": [
+          [
+            146367,
+            10666
+          ],
+          [
+            35286,
+            9997
+          ]
+        ],
+        "training_seconds": 46.86555975
+      }
+    ],
+    "best_model_within_experiment": "LogisticRegression",
+    "best_params": {
+      "model__max_depth": 12,
+      "model__min_samples_leaf": 8,
+      "model__n_estimators": 120
+    },
+    "supera_baseline_temporal": true,
+    "municipal_aggregate_warning": "Agregados municipais sao contexto; nao representam individuos."
+  },
+  "artifacts": [
+    "data_flow_trace.csv",
+    "excluded_variables_audit.csv",
+    "feature_audit_model_a.csv",
+    "feature_audit_model_b.csv",
+    "function_docstring_audit.csv",
+    "hypothesis_evidence_summary.csv",
+    "model_a_individual_results.csv",
+    "model_a_individual_results.json",
+    "model_b_temporal_results.csv",
+    "model_b_temporal_results.json",
+    "model_results.csv",
+    "municipal_aggregate_coverage_2024.csv",
+    "municipal_profile_aggregates_2022_2024.csv",
+    "mvp_checklist_answers.csv",
+    "notebook_structure_audit.csv",
+    "preprocessing_decisions.csv"
+  ]
+}

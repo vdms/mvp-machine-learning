@@ -1,0 +1,3 @@
+modelo,f1_cv_media,f1_cv_desvio,f1_cv_min,f1_cv_max
+LogisticRegression,0.5837,0.0039,0.578,0.5885
+RandomForestClassifier,0.5737,0.0053,0.5663,0.5791

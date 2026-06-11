@@ -1,0 +1,24 @@
+__pycache__/
+.ipynb_checkpoints/
+.env
+.venv/
+.DS_Store
+data/raw/*
+data/processed/*
+outputs/
+artifacts/*.pkl
+artifacts/*.joblib
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!outputs/.gitkeep
+!artifacts/.gitkeep
+
+.claude/
+
+# Material de apoio ao desenvolvimento (não faz parte da entrega)
+CLAUDE.md
+AGENTS.md
+PROMPT_INICIAL.md
+QUICKSTART.md
+docs/
+scripts/validate_project.py
