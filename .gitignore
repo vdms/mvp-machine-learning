@@ -3,22 +3,28 @@ __pycache__/
 .env
 .venv/
 .DS_Store
+
+# Dados brutos — baixar em https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/enem
 data/raw/*
 data/processed/*
-outputs/
-artifacts/*.pkl
-artifacts/*.joblib
 !data/raw/.gitkeep
 !data/processed/.gitkeep
-!outputs/.gitkeep
-!artifacts/.gitkeep
+
+# Artefatos gerados pelo notebook (regenerados ao executar)
+artifacts/
+
+# Cache matplotlib e cópias executadas
+outputs/.matplotlib/
+outputs/*_executed.ipynb
+notebooks/outputs/
+notebooks/*.html
 
 .claude/
 
-# Material de apoio ao desenvolvimento (não faz parte da entrega)
+# Material interno de desenvolvimento
 CLAUDE.md
 AGENTS.md
 PROMPT_INICIAL.md
 QUICKSTART.md
 docs/
-scripts/validate_project.py
+scripts/

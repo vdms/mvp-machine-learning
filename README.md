@@ -1,100 +1,235 @@
-# Prevendo alto desempenho em Matemática no ENEM — Rio de Janeiro, 2022–2024
+# Prevendo alto desempenho em Matemática no ENEM — Rio de Janeiro, 2022-2024
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vdms/mvp-ml-analytics-enem-rio/blob/main/notebooks/mvp_ml_analytics_enem_rio.ipynb)
 ![Python](https://img.shields.io/badge/Python-3.11+-blue)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-1.9-orange)
 
-MVP da disciplina de **Machine Learning & Analytics** (pós-graduação lato sensu). Investiga, com dados públicos, uma pergunta central para a educação brasileira: **o quanto as condições socioeconômicas de um estudante antecipam seu desempenho em Matemática no ENEM?** — e o que os erros do modelo revelam sobre desigualdade educacional.
+Este repositório contém um MVP da disciplina de **Machine Learning & Analytics** de uma pós-graduação lato sensu. O projeto usa microdados públicos do ENEM para investigar uma pergunta central para a educação brasileira:
 
-📓 **Notebook:** [`notebooks/mvp_ml_analytics_enem_rio.ipynb`](notebooks/mvp_ml_analytics_enem_rio.ipynb) · 🌐 **HTML executado:** [`notebooks/mvp_ml_analytics_enem_rio.html`](notebooks/mvp_ml_analytics_enem_rio.html)
+> Em que medida características socioeducacionais, escolares e de contexto antecipam alto desempenho em Matemática?
 
----
+O foco não é construir um modelo para rotular estudantes. O valor do trabalho está em formular um problema de ML de forma responsável, controlar vazamento de dados, comparar modelos contra baselines honestos e interpretar os erros como evidência sobre desigualdade educacional.
 
-## O problema
+Notebook principal: [`notebooks/mvp_ml_analytics_enem_rio.ipynb`](notebooks/mvp_ml_analytics_enem_rio.ipynb)  
+Versão HTML executada: [`notebooks/mvp_ml_analytics_enem_rio.html`](notebooks/mvp_ml_analytics_enem_rio.html)
 
-Classificação binária supervisionada:
+## Pergunta de ML
 
-> `target = 1` se a nota de Matemática ≥ **percentil 75** (calculado *apenas no conjunto de treino*) · `target = 0` caso contrário
+O problema foi formulado como uma **classificação binária supervisionada**:
 
-As features são exclusivamente características disponíveis **antes ou independentemente do resultado da prova**: perfil do participante (faixa etária, sexo, cor/raça, trajetória escolar), atributos da escola e o questionário socioeconômico (Q001–Q025: renda, escolaridade dos pais, bens domésticos, acesso à internet). Nenhuma nota, resposta, gabarito ou indicador de presença entra no modelo — a disciplina anti-vazamento é auditada em células próprias e registrada em `artifacts/`.
+```text
+target = 1 se a nota de Matemática estiver no quartil superior
+target = 0 caso contrário
+```
 
-**Hipóteses testadas:**
+Para evitar vazamento, o limiar de alto desempenho é calculado como o **percentil 75 da nota de Matemática apenas no conjunto de treino**. O modelo recebe somente variáveis disponíveis antes da avaliação ou independentes do resultado da prova:
 
-- **H1** — Variáveis socioeducacionais e escolares possuem capacidade preditiva relevante.
-- **H2** — Parte dos padrões aprendidos em 2022–2023 permanece estável em 2024.
-- **H3** — Modelos supervisionados superam um baseline ingênuo nos dois desenhos.
+- perfil do participante;
+- faixa etária, sexo e cor/raça;
+- trajetória escolar;
+- características da escola;
+- respostas do questionário socioeconômico;
+- agregados municipais quando a granularidade individual não está disponível.
 
-## Os dados
+Notas, respostas, gabaritos, presença e qualquer variável diretamente ligada ao resultado da prova foram excluídos do conjunto de features.
 
-| | |
+## Dados e recorte
+
+Os dados usados são os **Microdados do ENEM** publicados oficialmente pelo INEP, sem login, token ou API key.
+
+| Item | Definição |
 |---|---|
-| **Fonte** | [Microdados do ENEM — INEP](https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/enem) (oficial, público, sem login) |
-| **Edições** | 2022, 2023 e 2024 |
-| **Recorte** | `SG_UF_PROVA == "RJ"` (estado do Rio de Janeiro) |
-| **Elegibilidade** | Presença na prova de Matemática + nota válida |
-| **Amostra final** | **557.163** resultados elegíveis (169.524 / 185.323 / 202.316 por ano) e **822.583** perfis RJ |
+| Fonte | INEP — Microdados do ENEM |
+| Período | 2022, 2023 e 2024 |
+| Recorte geográfico | Estado do Rio de Janeiro (`SG_UF_PROVA == "RJ"`) |
+| Elegibilidade | Presença na prova de Matemática e nota válida |
+| Amostra final | 557.163 resultados elegíveis e 822.583 perfis RJ |
 
-Os dados brutos (~2 GB por edição) **não são versionados**: o notebook baixa os ZIPs automaticamente das URLs públicas do INEP na primeira execução (ou detecta cópias locais em `data/raw/`), lê em *chunks* e aplica os filtros ainda durante a leitura.
+Os arquivos brutos do INEP são grandes e não são versionados. O notebook baixa os ZIPs automaticamente a partir das URLs públicas ou reaproveita arquivos locais em `data/raw/`.
 
-## O que foi feito
+## Hipóteses
 
-O notebook percorre o fluxo completo de um projeto de ML, com narrativa em Markdown antes de cada etapa:
+O MVP testa três hipóteses:
 
-1. **Carga e recorte** — download/leitura dos microdados das 3 edições, filtro RJ, elegibilidade em Matemática, rastreabilidade dimensional em `data_flow_trace.csv`.
-2. **Pré-processamento auditável** — decisões registradas em tabela (o quê, por quê, onde, mitigação de vazamento); imputação, one-hot encoding e escala **dentro de `Pipeline`/`ColumnTransformer`**, ajustados só no treino; features constantes no recorte detectadas e removidas programaticamente.
-3. **EDA** — distribuição de notas por ano, prevalência do target, recortes descritivos por tipo de escola, cor/raça e renda; dicionário das variáveis do questionário socioeconômico.
-4. **Dois experimentos complementares** (não competem entre si):
-   - **Modelo A — pergunta socioeducacional individual:** treino/teste 80/20 estratificado em 2022–2023, com atributos individuais (44 features).
-   - **Modelo B — robustez temporal:** treino em 2022–2023 e teste externo em **2024**. Como o INEP mudou o schema de 2024 (perfis e resultados não se ligam individualmente), o perfil entra como **agregados municipais** — limitação real assumida em vez de contornada.
-5. **Modelagem e otimização** — baseline `DummyClassifier` (most_frequent **e** estratificado), `LogisticRegression`, `RandomForestClassifier` e RF otimizada via `GridSearchCV` (só no treino). Métrica principal: **F1-score** (classe positiva ≈ 25%); ROC-AUC complementar.
-6. **Validação cruzada** — 5-fold no treino do Modelo A para dar margem de erro ao F1 e testar se a vitória da LogReg sobre a RF é real.
-7. **Interpretabilidade** — coeficientes (log-odds) do modelo vencedor conectam a previsão à narrativa de desigualdade.
-8. **Análise de equidade** — taxas de falso negativo/positivo por tipo de escola e cor/raça, com discussão dos vieses de seleção.
-9. **Decomposição da queda temporal** — experimento extra que separa o efeito "perder granularidade individual" do efeito "mudar de ano", tornando H2 interpretável.
-10. **Qualidade de dados em produção** — detecção de uma mudança silenciosa de schema do INEP em 2024 e experimento de sensibilidade quantificando seu impacto.
+- **H1:** variáveis socioeducacionais e escolares possuem capacidade preditiva relevante para alto desempenho em Matemática.
+- **H2:** parte dos padrões aprendidos em 2022-2023 permanece útil em 2024.
+- **H3:** modelos supervisionados superam baselines ingênuos nos desenhos avaliados.
 
-## Resultados
+Essas hipóteses são tratadas como perguntas analíticas, não como prova causal.
 
-| Experimento | Melhor modelo | F1 | ROC-AUC | Baseline estratificado (F1) | Ganho |
+## Desenho experimental
+
+O projeto usa dois experimentos complementares. Eles respondem a perguntas diferentes e, por isso, não devem ser lidos como uma competição direta.
+
+### Modelo A — pergunta socioeducacional individual
+
+O Modelo A usa registros individuais de 2022 e 2023. O conjunto é dividido em treino e teste estratificados, mantendo o target em aproximadamente 25% de casos positivos. Este experimento mede quanto as informações socioeducacionais e escolares ajudam a prever alto desempenho dentro do mesmo período histórico.
+
+### Modelo B — robustez temporal
+
+O Modelo B treina em 2022-2023 e avalia em 2024. Como o INEP mudou o schema de 2024 e os perfis deixam de se ligar individualmente aos resultados, o experimento usa agregados municipais como contexto. Essa escolha reduz granularidade e cria risco de falácia ecológica, mas preserva uma pergunta importante: há sinal útil fora do período de treino?
+
+O notebook também inclui uma decomposição da queda temporal para separar o efeito da mudança de ano do efeito da perda de granularidade individual.
+
+## Pipeline de Machine Learning
+
+O fluxo segue as etapas esperadas de um projeto de ML reprodutível:
+
+1. carga dos microdados por ano;
+2. filtro do recorte RJ e elegibilidade em Matemática;
+3. definição do target sem usar o teste;
+4. auditoria de features permitidas e excluídas;
+5. análise exploratória;
+6. `train_test_split` estratificado ou separação temporal, conforme o experimento;
+7. imputação, codificação e escalonamento dentro de `Pipeline` e `ColumnTransformer`;
+8. comparação contra baselines;
+9. treinamento de `LogisticRegression`, `RandomForestClassifier` e Random Forest otimizada;
+10. validação cruzada no treino;
+11. avaliação final;
+12. análise de erros, equidade e limitações.
+
+Todo pré-processamento é ajustado somente no treino. O `GridSearchCV` também ocorre apenas dentro do conjunto de treino.
+
+## Modelos e métricas
+
+A métrica principal é o **F1-score**, porque a classe positiva representa aproximadamente o quartil superior de desempenho. Nesse contexto, accuracy isolada pode ser enganosa: um classificador conservador pode acertar muitos casos negativos e ainda falhar justamente em identificar estudantes de alto desempenho.
+
+Modelos avaliados:
+
+- `DummyClassifier` com estratégia majoritária;
+- `DummyClassifier` estratificado, usado como baseline honesto para ganho de F1;
+- `LogisticRegression`;
+- `RandomForestClassifier`;
+- `RandomForestClassifier` otimizada com `GridSearchCV`.
+
+ROC-AUC, precision, recall, matrizes de confusão e análises por subgrupo complementam a avaliação.
+
+## Resultados principais
+
+| Experimento | Melhor modelo | F1 | ROC-AUC | Baseline estratificado (F1) | Ganho relativo |
 |---|---|---:|---:|---:|---:|
-| **Modelo A** (teste interno 2022–2023) | LogisticRegression | **0,584** | 0,813 | 0,250 | **+133%** |
-| **Modelo B** (teste externo 2024) | LogisticRegression | **0,404** | 0,657 | 0,237 | **+70%** |
+| Modelo A — teste interno 2022-2023 | LogisticRegression | 0,584 | 0,813 | 0,250 | +133,5% |
+| Modelo B — teste externo 2024 | LogisticRegression | 0,404 | 0,657 | 0,237 | +70,5% |
 
-### Principais achados
+Principais achados:
 
-- 🏫 **Renda e escola dominam a previsão.** Gradiente consistente de renda (`Q006`: faixa mais baixa −0,94 log-odds → mais alta +0,68) e forte efeito da dependência administrativa (escola federal +1,0; estadual −0,7).
-- ⚖️ **O modelo erra de forma desigual.** Deixa de identificar **~49%** dos alunos de alto desempenho de escola pública (vs. ~11% da privada) e **~60%** dos estudantes pretos de alto desempenho (vs. ~16% dos brancos). Evidência quantitativa — não apenas prosa — de que a utilidade do modelo não se distribui uniformemente.
-- 🧩 **A queda em 2024 é majoritariamente perda de granularidade, não instabilidade.** A decomposição mostra: **~79%** da queda de F1 vem da troca de features individuais por agregados municipais (mesmo período); só **~21%** é efeito temporal.
-- 🔎 **Mudança de schema do INEP detectada nos dados.** Em 2024, `Q006` deixa de ser a pergunta de renda (17 faixas) e vira uma pergunta binária — corrompendo silenciosamente as features de renda no teste externo. Removê-las **melhora** o F1 de 2024 (0,404 → 0,423): parte do "drift temporal" era artefato de schema.
-- 📊 **LogReg e RandomForest são estatisticamente indistinguíveis** (CV 5-fold: 0,584±0,004 vs 0,574±0,005). A escolha do modelo linear se sustenta por interpretabilidade — e a otimização de hiperparâmetros, reportada com honestidade, não superou o modelo simples.
+- A `LogisticRegression` foi o melhor modelo nos dois desenhos, combinando desempenho competitivo, estabilidade e interpretabilidade.
+- No Modelo A, a Random Forest simples teve F1 0,575 e a otimizada 0,574; a otimização não superou o modelo linear.
+- No Modelo B, a Random Forest otimizada melhorou a Random Forest simples, mas ainda ficou abaixo da Logistic Regression em F1.
+- O ganho sobre o baseline estratificado sustenta a hipótese de que há sinal preditivo nas variáveis socioeducacionais e escolares.
+- Renda, tipo de escola e outros marcadores socioeducacionais aparecem como sinais fortes, mas isso deve ser lido como associação observacional, não causalidade.
+
+## Interpretação dos erros e equidade
+
+A parte mais importante do MVP não é apenas saber qual modelo venceu. É entender **como ele erra**.
+
+No Modelo A, o modelo deixa de identificar uma parcela maior de estudantes de alto desempenho em alguns grupos:
+
+- escola pública: taxa de falso negativo de aproximadamente 49%;
+- escola privada: taxa de falso negativo de aproximadamente 11%;
+- estudantes pretos: taxa de falso negativo de aproximadamente 60%;
+- estudantes brancos: taxa de falso negativo de aproximadamente 16%.
+
+Esses resultados mostram que a utilidade do modelo não se distribui de forma uniforme. Um modelo com bom desempenho médio pode falhar de maneira mais grave justamente nos grupos que políticas educacionais deveriam enxergar melhor.
+
+Por isso, o projeto não recomenda uso para classificação individual de estudantes. A contribuição mais defensável é analítica: quantificar padrões, expor desigualdades e demonstrar um pipeline de ML tecnicamente responsável.
+
+## Robustez temporal e schema de 2024
+
+O teste externo em 2024 é mais difícil por duas razões:
+
+1. muda o ano de avaliação;
+2. muda a granularidade das features, pois perfis e resultados deixam de se ligar individualmente.
+
+A decomposição implementada no notebook indica que a maior parte da queda de F1 vem da perda de granularidade individual, não apenas do passar do tempo.
+
+O projeto também detecta uma mudança silenciosa no schema do INEP: em 2024, `Q006` deixa de representar a mesma pergunta de renda usada em anos anteriores. Quando as features agregadas de `Q006` são removidas no Modelo B, o F1 sobe de 0,404 para 0,423. Isso reforça uma lição importante de ML aplicado: mudanças de schema podem parecer drift temporal se não forem auditadas.
+
+## Rastreabilidade
+
+O notebook gera artefatos para sustentar as decisões e permitir auditoria:
+
+- `artifacts/model_results.csv` e `.json`: métricas dos modelos;
+- `artifacts/honest_baseline_gain.csv`: ganho contra baseline estratificado;
+- `artifacts/feature_audit*.csv`: features permitidas, removidas e auditadas;
+- `artifacts/preprocessing_decisions.csv`: decisões de pré-processamento;
+- `artifacts/subgroup_error_model_a.csv`: análise de erro por grupo;
+- `artifacts/model_b_sensitivity_no_q006.csv`: sensibilidade ao schema de 2024;
+- `artifacts/data_flow_trace.csv`: rastreabilidade do fluxo de dados;
+- matrizes de confusão, gráficos de EDA e coeficientes do modelo linear.
+
+Esses artefatos ajudam a transformar o notebook em um relatório executável, e não apenas em uma sequência de células.
+
+## Limitações e ética
+
+Este MVP é um estudo observacional. Ele mostra associações entre contexto socioeducacional e alto desempenho, mas não estabelece causalidade.
+
+Principais limitações:
+
+- o recorte é apenas o estado do Rio de Janeiro;
+- a generalização para outros estados ou anos exige nova validação;
+- o Modelo B usa agregados municipais, sujeitos a falácia ecológica;
+- a mudança de schema em 2024 afeta a comparabilidade temporal;
+- as métricas médias escondem diferenças importantes entre grupos;
+- o modelo não deve ser usado para decisões individuais sobre estudantes.
+
+O uso responsável deste trabalho é analítico e educacional: entender sinais, vieses, desigualdades e riscos metodológicos em um problema real de classificação.
 
 ## Como executar
 
-**No Colab (recomendado para avaliação):** clique no badge no topo e execute todas as células — sem login, token ou upload. Download + execução completa: algumas dezenas de minutos.
+### Google Colab
 
-**Local:**
+Use o badge no topo do README e execute todas as células em ordem. O notebook baixa os dados públicos do INEP automaticamente ou detecta arquivos já presentes em `data/raw/`.
+
+### Local
 
 ```bash
-python -m venv .venv && source .venv/bin/activate
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 jupyter notebook notebooks/mvp_ml_analytics_enem_rio.ipynb
 ```
 
-Reprodutibilidade: `RANDOM_STATE = 42` em todas as etapas; `scripts/inspect_enem_file.py` inspeciona os arquivos brutos, se desejado.
+A execução completa pode levar algumas dezenas de minutos, principalmente por causa do download e processamento dos microdados.
 
 ## Estrutura do repositório
 
-```
+```text
 .
-├── notebooks/    # Notebook final (129 células) e versão HTML executada
-├── artifacts/    # Evidências geradas pelo notebook: métricas por modelo,
-│                 # matrizes de confusão, coeficientes, análises de equidade,
-│                 # auditorias de features/vazamento e rastreabilidade do fluxo
-├── scripts/      # Utilitário de inspeção dos microdados brutos
-├── data/raw/     # Microdados do INEP (não versionados; download automático)
-└── requirements.txt
+├── notebooks/
+│   ├── mvp_ml_analytics_enem_rio.ipynb
+│   └── mvp_ml_analytics_enem_rio.html
+├── artifacts/
+│   ├── model_results.csv
+│   ├── honest_baseline_gain.csv
+│   ├── subgroup_error_model_a.csv
+│   └── ...
+├── scripts/
+│   └── inspect_enem_file.py
+├── data/
+│   ├── raw/
+│   └── processed/
+├── requirements.txt
+└── README.md
 ```
 
-## Limitações e ética
+`data/raw/` e `data/processed/` não versionam os microdados. Eles existem como pontos de entrada e saída local do notebook.
 
-Estudo **observacional**: associação não é causalidade — variáveis socioeconômicas serem preditivas não significa que causem o desempenho. Os agregados municipais do Modelo B estão sujeitos à **falácia ecológica** e são tratados só como contexto. O recorte é o RJ; generalizar para outros estados ou anos exige validação externa. E a conclusão mais importante da análise de equidade: **este modelo não deve ser usado para rotular estudantes ou tomar decisões individuais** — seus erros recaem desproporcionalmente sobre os grupos que políticas educacionais mais precisam alcançar. O valor do trabalho está em demonstrar o fluxo técnico com rigor anti-vazamento e em **quantificar** desigualdades educacionais com dados públicos. Discussão completa nas seções finais do notebook.
+## Autoavaliação
+
+O principal desafio deste MVP foi formular um problema de ML que fosse tecnicamente válido e socialmente honesto. Em um dataset educacional, é fácil obter alguma capacidade preditiva usando variáveis socioeconômicas; mais difícil é reconhecer o que esse desempenho significa e, principalmente, o que ele não autoriza concluir.
+
+As decisões mais importantes do projeto foram:
+
+- definir o target sem olhar para o teste;
+- excluir qualquer variável que vazasse o resultado da prova;
+- comparar modelos contra baselines apropriados;
+- tratar 2024 como teste externo, mesmo com perda de granularidade;
+- interpretar erros por grupo, não apenas métricas agregadas;
+- preferir um modelo mais interpretável quando a complexidade adicional não trouxe ganho claro.
+
+O resultado é um MVP de ML completo o suficiente para demonstrar classificação supervisionada, avaliação, robustez temporal e interpretabilidade, mas cauteloso o bastante para não vender uma previsão educacional como ferramenta de decisão individual.
+
+## Nota final
+
+Este projeto deve ser lido como um exercício aplicado de Machine Learning & Analytics: um notebook reprodutível, com dados públicos, anti-vazamento explícito, métricas rastreáveis e discussão crítica dos erros. A conclusão central não é que estudantes podem ser reduzidos a um score, mas que modelos podem revelar, com números, a persistência de desigualdades que já atravessam o sistema educacional.

@@ -1,4 +1,0 @@
-year,zip_file,csv_member,rows_seen,rows_kept_score_valid_rj,missing_requested_columns
-2022,microdados_enem_2022.zip,DADOS/MICRODADOS_ENEM_2022.csv,3476105,169524,[]
-2023,microdados_enem_2023.zip,DADOS/MICRODADOS_ENEM_2023.csv,3933955,185323,[]
-2024,microdados_enem_2024.zip,DADOS/RESULTADOS_2024.csv,4332944,202316,[]

@@ -1,4 +1,0 @@
-ano,arquivo_zip,tamanho_mb,csv_microdados,colunas_microdados,csv_resultados,colunas_resultados,csv_participantes,colunas_participantes
-2022,microdados_enem_2022.zip,591.99,DADOS/MICRODADOS_ENEM_2022.csv,76.0,DADOS/MICRODADOS_ENEM_2022.csv,76,DADOS/MICRODADOS_ENEM_2022.csv,76
-2023,microdados_enem_2023.zip,496.45,DADOS/MICRODADOS_ENEM_2023.csv,76.0,DADOS/MICRODADOS_ENEM_2023.csv,76,DADOS/MICRODADOS_ENEM_2023.csv,76
-2024,microdados_enem_2024.zip,710.19,,,DADOS/RESULTADOS_2024.csv,42,DADOS/PARTICIPANTES_2024.csv,38

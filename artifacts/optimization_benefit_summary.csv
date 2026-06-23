@@ -1,3 +1,0 @@
-experimento,f1_logreg,f1_rf_simples,f1_rf_otimizada,otim_superou_rf_simples,otim_superou_modelo_vencedor,modelo_vencedor
-Modelo A,0.5842,0.5752,0.5745,False,False,LogisticRegression
-Modelo B,0.4038,0.2821,0.3032,True,False,LogisticRegression
