@@ -10,8 +10,7 @@ Este repositório contém um MVP da disciplina de **Machine Learning & Analytics
 
 O foco não é construir um modelo para rotular estudantes. O valor do trabalho está em formular um problema de ML de forma responsável, controlar vazamento de dados, comparar modelos contra baselines honestos e interpretar os erros como evidência sobre desigualdade educacional.
 
-Notebook principal: [`notebooks/mvp_ml_analytics_enem_rio.ipynb`](notebooks/mvp_ml_analytics_enem_rio.ipynb)  
-Versão HTML executada: [`notebooks/mvp_ml_analytics_enem_rio.html`](notebooks/mvp_ml_analytics_enem_rio.html)
+Notebook principal: [`notebooks/mvp_ml_analytics_enem_rio.ipynb`](notebooks/mvp_ml_analytics_enem_rio.ipynb)
 
 ## Pergunta de ML
 
@@ -197,15 +196,11 @@ A execução completa pode levar algumas dezenas de minutos. Quando não houver 
 ```text
 .
 ├── notebooks/
-│   ├── mvp_ml_analytics_enem_rio.ipynb
-│   └── mvp_ml_analytics_enem_rio.html
-├── artifacts/
-│   ├── model_results.csv
-│   ├── honest_baseline_gain.csv
-│   ├── subgroup_error_model_a.csv
-│   └── ...
-├── scripts/
-│   └── inspect_enem_file.py
+│   └── mvp_ml_analytics_enem_rio.ipynb
+├── outputs/
+│   ├── enem_rj_results_2022_2024.csv.gz
+│   ├── enem_rj_profiles_2022_2024.csv.gz
+│   └── enem_rj_2022_2024.csv.gz
 ├── data/
 │   ├── raw/
 │   └── processed/
@@ -214,6 +209,8 @@ A execução completa pode levar algumas dezenas de minutos. Quando não houver 
 ```
 
 `data/raw/` e `data/processed/` não versionam os microdados. Eles existem como pontos de entrada e saída local do notebook.
+
+Ao executar o notebook, a pasta `artifacts/` é criada ou atualizada localmente com métricas, auditorias, tabelas e gráficos de suporte.
 
 ## Autoavaliação
 
