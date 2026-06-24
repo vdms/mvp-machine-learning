@@ -18,13 +18,3 @@ outputs/.matplotlib/
 outputs/*_executed.ipynb
 notebooks/outputs/
 notebooks/*.html
-
-.claude/
-
-# Material interno de desenvolvimento
-CLAUDE.md
-AGENTS.md
-PROMPT_INICIAL.md
-QUICKSTART.md
-docs/
-scripts/

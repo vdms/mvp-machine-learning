@@ -45,7 +45,7 @@ Os dados usados são os **Microdados do ENEM** publicados oficialmente pelo INEP
 | Elegibilidade | Presença na prova de Matemática e nota válida |
 | Amostra final | 557.163 resultados elegíveis e 822.583 perfis RJ |
 
-Os arquivos brutos do INEP são grandes e não são versionados. O notebook baixa os ZIPs automaticamente a partir das URLs públicas ou reaproveita arquivos locais em `data/raw/`.
+Os arquivos brutos do INEP são grandes e não são versionados. Em execução local, o notebook reaproveita bases derivadas em `outputs/` ou processa os ZIPs oficiais em `data/raw/`. No Google Colab, o notebook usa bases derivadas públicas dos microdados oficiais para evitar baixar e processar cerca de 1,8 GB durante a avaliação.
 
 ## Hipóteses
 
@@ -179,7 +179,7 @@ O uso responsável deste trabalho é analítico e educacional: entender sinais, 
 
 ### Google Colab
 
-Use o badge no topo do README e execute todas as células em ordem. O notebook baixa os dados públicos do INEP automaticamente ou detecta arquivos já presentes em `data/raw/`.
+Use o badge no topo do README e execute todas as células em ordem. No Colab, o notebook baixa bases derivadas públicas salvas em `outputs/`, produzidas a partir dos microdados oficiais do INEP.
 
 ### Local
 
@@ -190,7 +190,7 @@ pip install -r requirements.txt
 jupyter notebook notebooks/mvp_ml_analytics_enem_rio.ipynb
 ```
 
-A execução completa pode levar algumas dezenas de minutos, principalmente por causa do download e processamento dos microdados.
+A execução completa pode levar algumas dezenas de minutos. Quando não houver cache em `outputs/`, o processamento local dos ZIPs oficiais é a etapa mais demorada.
 
 ## Estrutura do repositório
 
