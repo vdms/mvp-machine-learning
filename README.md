@@ -1,6 +1,6 @@
 # Prevendo alto desempenho em Matemática no ENEM — Rio de Janeiro, 2022-2024
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vdms/mvp-ml-analytics-enem-rio/blob/main/notebooks/mvp_ml_analytics_enem_rio.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vdms/mvp-machine-learning/blob/main/notebooks/mvp_ml_analytics_enem_rio.ipynb)
 ![Python](https://img.shields.io/badge/Python-3.11+-blue)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-1.9-orange)
 
