@@ -189,7 +189,7 @@ pip install -r requirements.txt
 jupyter notebook notebooks/mvp_ml_analytics_enem_rio.ipynb
 ```
 
-A execução completa pode levar algumas dezenas de minutos. Quando não houver cache em `outputs/`, o processamento local dos ZIPs oficiais é a etapa mais demorada.
+A execução completa costuma levar alguns minutos quando os caches derivados em `outputs/` estão disponíveis; em uma sessão nova do Colab, o tempo pode variar conforme rede e CPU da VM. Quando não houver cache em `outputs/`, o processamento local dos ZIPs oficiais é a etapa mais demorada.
 
 ## Estrutura do repositório
 
@@ -199,8 +199,7 @@ A execução completa pode levar algumas dezenas de minutos. Quando não houver 
 │   └── mvp_ml_analytics_enem_rio.ipynb
 ├── outputs/
 │   ├── enem_rj_results_2022_2024.csv.gz
-│   ├── enem_rj_profiles_2022_2024.csv.gz
-│   └── enem_rj_2022_2024.csv.gz
+│   └── enem_rj_profiles_2022_2024.csv.gz
 ├── data/
 │   ├── raw/
 │   └── processed/
@@ -210,7 +209,7 @@ A execução completa pode levar algumas dezenas de minutos. Quando não houver 
 
 `data/raw/` e `data/processed/` não versionam os microdados. Eles existem como pontos de entrada e saída local do notebook.
 
-Ao executar o notebook, a pasta `artifacts/` é criada ou atualizada localmente com métricas, auditorias, tabelas e gráficos de suporte.
+Ao executar o notebook, a pasta `artifacts/` é criada ou atualizada localmente com métricas, auditorias, tabelas e gráficos de suporte. Esses arquivos não precisam estar previamente no repositório: eles são evidências produzidas pela própria execução.
 
 ## Autoavaliação
 
