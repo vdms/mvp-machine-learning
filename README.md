@@ -82,12 +82,12 @@ O fluxo segue as etapas esperadas de um projeto de ML reprodutível:
 6. `train_test_split` estratificado ou separação temporal, conforme o experimento;
 7. imputação, codificação e escalonamento dentro de `Pipeline` e `ColumnTransformer`;
 8. comparação contra baselines;
-9. treinamento de `LogisticRegression`, `RandomForestClassifier` e Random Forest otimizada;
-10. validação cruzada no treino;
-11. avaliação final;
+9. comparação de `LogisticRegression` e três configurações de `RandomForestClassifier` somente no treino;
+10. seleção por validação cruzada no Modelo A e validação 2022 → 2023 no Modelo B;
+11. ajuste e avaliação final apenas do modelo bloqueado e do baseline;
 12. análise de erros, equidade e limitações.
 
-Todo pré-processamento é ajustado somente no treino. O `GridSearchCV` também ocorre apenas dentro do conjunto de treino.
+Todo pré-processamento é ajustado somente no treino. O `GridSearchCV` também ocorre apenas dentro do conjunto de treino. A busca usa uma amostra estratificada de aproximadamente 60 mil linhas e 80 árvores por RF; a regressão logística final usa todo o treino. O teste interno e 2024 não participam da seleção.
 
 ## Modelos e métricas
 
@@ -107,14 +107,15 @@ ROC-AUC, precision, recall, matrizes de confusão e análises por subgrupo compl
 
 | Experimento | Melhor modelo | F1 | ROC-AUC | Baseline estratificado (F1) | Ganho relativo |
 |---|---|---:|---:|---:|---:|
-| Modelo A — teste interno 2022-2023 | LogisticRegression | 0,584 | 0,813 | 0,250 | +133,5% |
-| Modelo B — teste externo 2024 | LogisticRegression | 0,404 | 0,657 | 0,237 | +70,5% |
+| Modelo A — teste interno 2022-2023 | LogisticRegression | 0,587 | 0,815 | 0,250 | +134,5% |
+| Modelo B — teste externo 2024 | LogisticRegression | 0,426 | 0,682 | 0,237 | +79,9% |
 
 Principais achados:
 
-- A `LogisticRegression` foi o melhor modelo nos dois desenhos, combinando desempenho competitivo, estabilidade e interpretabilidade.
-- No Modelo A, a Random Forest simples teve F1 0,575 e a otimizada 0,574; a otimização não superou o modelo linear.
-- No Modelo B, a Random Forest otimizada melhorou a Random Forest simples, mas ainda ficou abaixo da Logistic Regression em F1.
+- A `LogisticRegression` foi selecionada no treino nos dois desenhos, combinando melhor F1 de validação e interpretabilidade.
+- No Modelo A, a LR obteve F1 médio de validação 0,581; a melhor RF obteve 0,572.
+- No Modelo B, a LR obteve F1 0,463 na validação temporal 2022 → 2023; a melhor RF obteve 0,381.
+- O teste foi usado apenas para medir o modelo já selecionado, e não para escolher a alternativa vencedora.
 - O ganho sobre o baseline estratificado sustenta a hipótese de que há sinal preditivo nas variáveis socioeducacionais e escolares.
 - Renda, tipo de escola e outros marcadores socioeducacionais aparecem como sinais fortes, mas isso deve ser lido como associação observacional, não causalidade.
 
@@ -124,9 +125,9 @@ A parte mais importante do MVP não é apenas saber qual modelo venceu. É enten
 
 No Modelo A, o modelo deixa de identificar uma parcela maior de estudantes de alto desempenho em alguns grupos:
 
-- escola pública: taxa de falso negativo de aproximadamente 49%;
-- escola privada: taxa de falso negativo de aproximadamente 11%;
-- estudantes pretos: taxa de falso negativo de aproximadamente 60%;
+- escola pública: taxa de falso negativo de aproximadamente 50%;
+- escola privada: taxa de falso negativo de aproximadamente 10%;
+- estudantes pretos: taxa de falso negativo de aproximadamente 59%;
 - estudantes brancos: taxa de falso negativo de aproximadamente 16%.
 
 Esses resultados mostram que a utilidade do modelo não se distribui de forma uniforme. Um modelo com bom desempenho médio pode falhar de maneira mais grave justamente nos grupos que políticas educacionais deveriam enxergar melhor.
@@ -142,7 +143,7 @@ O teste externo em 2024 é mais difícil por duas razões:
 
 A decomposição implementada no notebook indica que a maior parte da queda de F1 vem da perda de granularidade individual, não apenas do passar do tempo.
 
-O projeto também detecta uma mudança silenciosa no schema do INEP: em 2024, `Q006` deixa de representar a mesma pergunta de renda usada em anos anteriores. Quando as features agregadas de `Q006` são removidas no Modelo B, o F1 sobe de 0,404 para 0,423. Isso reforça uma lição importante de ML aplicado: mudanças de schema podem parecer drift temporal se não forem auditadas.
+O projeto também detecta uma mudança silenciosa no schema do INEP: em 2024, `Q006` deixa de representar a mesma pergunta de renda usada em anos anteriores. Por isso, as 17 features `agg_Q006_*` são excluídas antes da seleção e do treinamento do Modelo B. O F1 externo de 0,426 já corresponde a esse desenho compatível, sem escolher a alternativa pelo desempenho em 2024.
 
 ## Rastreabilidade
 
@@ -153,7 +154,10 @@ O notebook gera artefatos para sustentar as decisões e permitir auditoria:
 - `artifacts/feature_audit*.csv`: features permitidas, removidas e auditadas;
 - `artifacts/preprocessing_decisions.csv`: decisões de pré-processamento;
 - `artifacts/subgroup_error_model_a.csv`: análise de erro por grupo;
-- `artifacts/model_b_sensitivity_no_q006.csv`: sensibilidade ao schema de 2024;
+- `artifacts/model_a_training_selection.csv` e `model_b_training_selection.csv`: seleção feita apenas no treino;
+- `artifacts/model_a_f1_uncertainty.csv`: incerteza do F1 por bootstrap de municípios;
+- `artifacts/model_b_schema_exclusion_q006.csv`: decisão de compatibilidade do schema;
+- `artifacts/performance_profile.csv` e `.json`: fits, árvores e tempos das suítes;
 - `artifacts/data_flow_trace.csv`: rastreabilidade do fluxo de dados;
 - matrizes de confusão, gráficos de EDA e coeficientes do modelo linear.
 
@@ -189,7 +193,7 @@ pip install -r requirements.txt
 jupyter notebook notebooks/mvp_ml_analytics_enem_rio.ipynb
 ```
 
-A execução completa costuma levar alguns minutos quando os caches derivados em `outputs/` estão disponíveis; em uma sessão nova do Colab, o tempo pode variar conforme rede e CPU da VM. Quando não houver cache em `outputs/`, o processamento local dos ZIPs oficiais é a etapa mais demorada.
+A execução otimizada foi validada localmente, com os caches derivados disponíveis, em aproximadamente 68 segundos. Esse número não substitui a medição em uma sessão nova do Colab, cuja CPU e rede variam; o critério de entrega permanece execução integral em no máximo 15 minutos. Quando não houver cache em `outputs/`, o processamento local dos ZIPs oficiais é a etapa mais demorada.
 
 ## Estrutura do repositório
 
